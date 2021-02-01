@@ -1,0 +1,12 @@
+CA签发证书
+openssl ca -in 1.csr -out 1.crt
+
+每签发一个证书
+
+serial值加1
+
+index.txt会存储证书状态，序列号，名字，申请者信息
+如:V	291206025720Z		04	unknown	/C=CN/ST=Beijing/O=Anwei/OU=IT
+
+生成的新证书在newcerts文件夹下
+如:04.pem

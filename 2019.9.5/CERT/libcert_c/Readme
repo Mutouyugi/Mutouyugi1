@@ -1,0 +1,13 @@
+1.  make
+2.  export LD_LIBRARY_PATH=./
+3.  gcc -g -o test test.c -I./ -L./ -lcertc
+4.  ./test
+
+/*
+	*接口:不依赖openssl库的解析证书代码
+	*
+	*[in]*cert:证书路径
+	*
+	*[out]*cert_verify_st:存储解析后证书数据的结构体
+*/
+int tX509_analysis(const char *cert, cert_st *cert_verify_st);

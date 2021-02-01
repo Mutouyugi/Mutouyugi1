@@ -1,0 +1,38 @@
+吊销证书
+
+1.客户端获取要吊销的证书的serial和subject信息
+[root@localhost ~]# openssl x509 -in /etc/httpd/ssl/httpd.crt -noout -serial -subject
+serial=01
+subject= /C=CN/ST=GuangDong/O=example/OU=Ops/CN=www.example.com/emailAddress=admin@example.com
+###############################################################################################
+
+2.CA主机吊销证书
+  根据客户端提交的serial与subject信息，对比检验是否与index.txt文件中的信息一致
+[root@server ~]# cat /etc/pki/CA/index.txt
+V   181118150639Z       01  unknown /C=CN/ST=GuangDong/O=example/OU=Ops/CN=www.example.com/emailAddress=admin@example.com
+##############################################################################################
+
+3.吊销证书
+[root@server ~]# openssl ca -revoke /etc/pki/CA/newcerts/01.pem 
+Using configuration from /etc/pki/tls/openssl.cnf
+Revoking Certificate 01.
+Data Base Updated
+##############################################################################################
+
+4.吊销之后再查看index.txt文件
+[root@server ~]# cat /etc/pki/CA/index.txt
+R   181118150639Z   171118155958Z   01  unknown /C=CN/ST=GuangDong/O=example/OU=Ops/CN=www.example.com/emailAddress=admin@example.com
+其中R表示证书已失效
+###############################################################################################
+
+5.生成吊销证书的编号(第一次吊销证书时执行)
+[root@server ~]# echo  01  > /etc/pki/CA/crlnumber
+###############################################################################################
+
+6.更新证书吊销列表
+[root@server ~]# openssl ca -gencrl -out /etc/pki/CA/crl/ca.crl
+Using configuration from /etc/pki/tls/openssl.cnf
+################################################################################################
+
+7.查看crl文件
+[root@server ~]# openssl crl -in /etc/pki/CA/crl/ca.crl -noout -text

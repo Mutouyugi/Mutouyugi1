@@ -1,0 +1,86 @@
+CA系统搭建
+
+1.openssl version -a 查看
+   OPENSSLDIR: "目录(一般为/etc/pki/tls)"
+
+2.修改配置文件/etc/pki/tls/openssl.cnf
+####################################################################
+[ CA_default ]
+
+dir             = /etc/pki/CA           # Where everything is kept     <==默认工作目录，变量形式
+certs           = $dir/certs            # Where the issued certs are kept   <==签发证书位置
+crl_dir         = $dir/crl              # Where the issued crl are kept    <==吊销证书位置
+database        = $dir/index.txt        # database index file.     <==颁发过的证书索引文件
+#unique_subject = no                    # Set to 'no' to allow creation of
+                                        # several ctificates with same subject.
+new_certs_dir   = $dir/newcerts         # default place for new certs.  <==新的证书位置
+
+certificate     = $dir/cacert.pem       # The CA certificate     <==CA的自签证书
+serial          = $dir/serial           # The current serial number    <==当前证书序列号，第一次要指定
+crlnumber       = $dir/crlnumber        # the current crl number  <==吊销证书序列号，第一次吊销要指定
+                                        # must be commented out to leave a V1 CRL
+crl             = $dir/crl.pem          # The current CRL     <==证书吊销列表文件
+private_key     = $dir/private/cakey.pem# The private key     <==CA自己的私钥
+RANDFILE        = $dir/private/.rand    # private random number file
+
+x509_extensions = usr_cert              # The extentions to add to the cert
+
+# Comment out the following two lines for the "traditional"
+# (and highly broken) format.
+name_opt        = ca_default            # Subject Name options
+cert_opt        = ca_default            # Certificate field options
+
+# Extension copying option: use with caution.
+# copy_extensions = copy
+
+# Extensions to add to a CRL. Note: Netscape communicator chokes on V2 CRLs
+# so this is commented out by default to leave a V1 CRL.
+# crlnumber must also be commented out to leave a V1 CRL.
+# crl_extensions        = crl_ext
+
+default_days    = 365                   # how long to certify for     <==证书的默认有效期
+default_crl_days= 30                    # how long before next CRL    <==默认声明有效期
+default_md      = sha256                # use SHA-256 by default    <==默认的生成算法
+preserve        = no                    # keep passed DN ordering
+
+# A few difference way of specifying how similar the request should look
+# For type CA, the listed attributes must be the same, and the optional
+# and supplied fields are just that :-)
+policy          = policy_match
+
+# For the CA policy     <==CA策略相关属性
+[ policy_match ]
+countryName             = match     <==country name（国家名）必须匹配CA证书
+stateOrProvinceName     = match     <==stateOrProvinceName（州或省名）必须匹配CA证书
+organizationName        = match     <==organizationName（组织机构名称，例如公司名）必须匹配CA证书
+organizationalUnitName  = optional     <==organizationalUnitName（组织单位，例如公司部门）可选
+commonName              = supplied    <==commonName（通用名字，例如域名）必须提供
+emailAddress            = optional    <==emailAddress（邮件地址）可选
+
+# For the 'anything' policy
+# At this point in time, you must list all acceptable 'object'
+# types.
+[ policy_anything ]
+countryName             = optional
+stateOrProvinceName     = optional
+localityName            = optional     <==localityName（地区名，例如城市） 可选
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+####################################################################
+
+3.创建CA所需要的文件和目录
+#####################################################################
+[root@server ~]# mkdir -pv /etc/pki/CA/{certs,crl,newcerts,private}
+[root@server ~]# touch /etc/pki/CA/{serial,index.txt}
+[root@server ~]# echo 01 > /etc/pki/CA/serial     <==将序列号写入此文件
+######################################################################
+
+4.生成CA的私钥
+  (umask 077; ecparam -genkey -name SM2 -out  private/cakey.pem)
+5.生成CA证书
+  openssl req -new -x509 -key private/cakey.pem -out cacert.pem (可以的话换成SM3算法)
+
+

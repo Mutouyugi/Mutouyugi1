@@ -1,0 +1,5 @@
+1.		make
+2.		cp libcsranay.so ./lib
+3.		export LD_LIBRARY_PATH=./lib
+4.		gcc -g -o test test.c -I./include -L./lib -lcsranay -lssl -lcrypto
+ 5.		./test

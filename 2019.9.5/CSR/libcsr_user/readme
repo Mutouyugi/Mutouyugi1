@@ -1,0 +1,22 @@
+test :
+        1.		make
+        2.		cp libcsr.so ./lib
+        3.		export LD_LIBRARY_PATH=./lib
+        4.		gcc -g -o test test.c -I./include -L./lib -lcsr -lsm -lSKF_final -lssl -lcrypto 
+        5.		./test
+
+/*          *接口:用户证书请求文件生成
+            *
+            *[in]*commonName:用户网址(CN): 字符型 
+            *[in]*localityName:地市,区/县(L): 字符型 
+            *[in]*stateOrProvinceName:省份(S) 字符型 
+            *[in]*countryName:国家(C) 字符型 
+	    *[in]*organizationName:组织名(O)
+	    *[in]*organizationalUnitName:部门名(OU)
+            *[in]*emailAddress:邮箱(E)
+            *
+            * [out]SM2.csr:证书请求文件
+*/
+void Generat_CSR(unsigned char*countryName,unsigned char*stateOrProvinceName,unsigned char*localityName,
+                                            unsigned char*organizationName,unsigned char*organizationalUnitName,unsigned char*commonName,
+                                            unsigned char*emailAddress);

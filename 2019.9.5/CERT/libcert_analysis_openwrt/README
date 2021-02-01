@@ -1,0 +1,22 @@
+1.		make
+2.		cp libcert.so ./lib/linux
+3.		export LD_LIBRARY_PATH=./lib
+4.		gcc -g -o test test.c -I./include -L./lib -libcert -lssl -lcrypto
+5.		./test
+
+/*   
+            *接口:证书解析
+            *
+            *[in]*cert:证书路径
+            *
+            * [out]*cert_verify_st:存储解析后证书数据的结构体
+*/
+int tX509_analysis(char *cert_path, cert_st **cert_verify_st);
+
+CN=公用名称                            NID=13
+C=国家                                 NID=14
+L =城市或者区域                        NID=15
+ST=省份                                NID=16
+O=组织名称                             NID=17
+OU=组织单位名称                        NID=18
+

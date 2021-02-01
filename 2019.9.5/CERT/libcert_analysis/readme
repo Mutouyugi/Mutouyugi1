@@ -1,0 +1,52 @@
+1.		make
+2.		cp libcert.so ./lib
+3.		export LD_LIBRARY_PATH=./lib
+4.		gcc -g -o test test.c -I./include -L./lib -lcert -lssl -lcrypto
+5.		./test
+
+
+/*   
+            *接口:证书解析
+            *
+            *[in]*cert:证书路径
+            *
+            * [out]*cert_verify_st:存储解析后证书数据的结构体
+*/
+int tX509_analysis(char *cert, cert_st *cert_verify_st);
+
+
+X509证书解析
+输入：证书文件地址，储存解析后证书基本项的cert_st结构体
+          certAlazeca.c代码文件会解析证书，并且把内容保存在cert_st结构体中
+
+certAlazeca.h  定义了所需要的头文件，X509结构体证书，存储解析后证书基	       	       本项的结构体
+certAlazeca.c   把证书文件解析成ASN1编码形式的X509结构
+	       然后把ASN1编码形式转成C语言类型
+	      存储为如下结构体里面
+         typedef struct	cert_analy_st{
+			char	*version;版本号
+			char 	*serialNumber;序列号
+			char    signature[128];签名算法
+			char *issuer_NID[6];颁布者NID
+			const char *issuer_name[512];颁布者名字
+			struct tm*before_time;起始时间
+			struct tm*after_time;终止时间
+			char *subject_NID[6];使用者NID
+			const char *subject_name[512];使用者名字
+			unsigned char pubkey[1280];公钥值
+			int pubkeylen;公钥长度
+			unsigned char signatureValue[1280];签名值
+			int signatureValuelen;签名长度
+			unsigned char HashValue[1000];指纹值
+			}cert_st;
+
+
+
+CN=公用名称                            NID=13
+C=国家                                                   14
+ST=省份                                                 16
+L =城市或者区域                                 15
+O=组织名称                                          17
+OU=组织单位名称                              18
+
+

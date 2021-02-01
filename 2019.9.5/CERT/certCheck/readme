@@ -1,0 +1,33 @@
+1.			make
+2.			cp libcertCheck.so ./lib
+3.			export LD_LIBRARY_PATH=./lib
+4.			gcc -g -o test chektest.c -I./include -L./lib -lcertCheck -lssl -lcrypto
+5.			./test
+
+/*   
+            *接口:证书根链验证
+            *
+            *[in]*user_path:用户证书路径
+            *[in]*root_path:根证书路径
+            *[in]*CRL_path:CRL证书销毁列表路径
+            *
+            * [out]1:验证正确 0:验证错误 -1:NULL
+*/
+int CheckCert(char*user_path,char*root_path,char*CRL_path);
+
+证书有效性验证：1.证书链
+	               					2.证书有效期
+	           						3.证书销毁列表CRL
+实现：
+输入：根证书文件地址，用户证书地址（如果有CRL文件，输入CRL文件地址）
+输出：0 证书失效
+          1 证书有效
+          负数 错误
+
+certCheck.h  定义X509结构体
+certCheck.c  创建X509证书存储区pCaCertStore
+	    解析根证书与用户证书
+	    把CRL文件与根证书X509结构体导入pCaCertStore
+	    pCaCertStore与用户证书X509生成ctx
+	    通过X509_verify_cert函数验证
+chektest.c     测试
